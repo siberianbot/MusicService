@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting.WindowsServices;
 using Microsoft.Extensions.Options;
 using MusicService.Database;
 using MusicService.Options;
@@ -53,6 +54,11 @@ public class Program
     private static IHost CreateHost(string[] args)
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+
+        if (WindowsServiceHelpers.IsWindowsService())
+        {
+            builder.Services.AddWindowsService(options => { options.ServiceName = "Music Conversion Service"; });
+        }
 
         builder.Services.AddOptions<WorkerOptions>()
             .BindConfiguration("Worker")
