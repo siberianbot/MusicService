@@ -4,5 +4,4 @@ public record MediaEntry(
     string RelativeSourceFilePath,
     string RelativeTargetFilePath,
     string AbsoluteSourceFilePath,
-    string AbsoluteTargetFilePath,
-    bool RequiresConversion);
+    string AbsoluteTargetFilePath);

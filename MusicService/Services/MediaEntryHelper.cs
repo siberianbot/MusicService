@@ -13,7 +13,6 @@ public class MediaEntryHelper(
     {
         string sourceFilePath = Path.GetRelativePath(libraryOptions.Value.SourceFullPath, path);
         string targetFilePath;
-        bool requiresConversion;
 
         if (conversionOptions.Value.Conversions.TryGetValue(
                 Path.GetExtension(sourceFilePath).TrimStart('.'),
@@ -25,21 +24,17 @@ public class MediaEntryHelper(
             targetFilePath = directory != null
                 ? Path.Combine(directory, name)
                 : name;
-
-            requiresConversion = true;
         }
         else
         {
             targetFilePath = sourceFilePath;
-            requiresConversion = false;
         }
 
         return new MediaEntry(
             sourceFilePath,
             targetFilePath,
             Path.GetFullPath(path),
-            Path.Combine(libraryOptions.Value.TargetFullPath, targetFilePath),
-            requiresConversion);
+            Path.Combine(libraryOptions.Value.TargetFullPath, targetFilePath));
     }
 
     public MediaEntry MakeEntry(MediaDbEntry dbEntry)
@@ -48,8 +43,7 @@ public class MediaEntryHelper(
             dbEntry.SourceFilePath,
             dbEntry.TargetFilePath,
             Path.Combine(libraryOptions.Value.SourceFullPath, dbEntry.SourceFilePath),
-            Path.Combine(libraryOptions.Value.TargetFullPath, dbEntry.TargetFilePath),
-            dbEntry.SourceFilePath != dbEntry.TargetFilePath);
+            Path.Combine(libraryOptions.Value.TargetFullPath, dbEntry.TargetFilePath));
     }
 
     public MediaDbEntry MakeDbEntry(MediaEntry entry)

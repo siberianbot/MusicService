@@ -68,6 +68,10 @@ public class Program
             .BindConfiguration("Library")
             .ValidateOnStart();
 
+        builder.Services.AddOptions<FFMpegOptions>()
+            .BindConfiguration("FFMpeg")
+            .ValidateOnStart();
+
         builder.Services.AddOptions<ConversionOptions>()
             .Configure((ConversionOptions options, IConfiguration configuration) =>
             {

@@ -54,18 +54,9 @@ public class MediaProcessingService(
             Directory.CreateDirectory(directory);
         }
 
-        if (!entry.RequiresConversion)
-        {
-            File.Copy(entry.AbsoluteSourceFilePath, entry.AbsoluteTargetFilePath, true);
+        await ffMpegService.ConvertAsync(entry.AbsoluteSourceFilePath, entry.AbsoluteTargetFilePath, token);
 
-            logger.LogInformation("Copied to {targetFilePath}", entry.AbsoluteTargetFilePath);
-        }
-        else
-        {
-            await ffMpegService.ConvertAsync(entry.AbsoluteSourceFilePath, entry.AbsoluteTargetFilePath, token);
-
-            logger.LogInformation("Converted to {targetFilePath}", entry.AbsoluteTargetFilePath);
-        }
+        logger.LogInformation("Converted to {targetFilePath}", entry.AbsoluteTargetFilePath);
 
         await mediaDbService.SetEntryAsync(dbEntry ?? mediaEntryHelper.MakeDbEntry(entry), token);
     }

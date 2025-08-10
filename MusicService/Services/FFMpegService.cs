@@ -2,16 +2,27 @@
 using FFMpegCore.Enums;
 using FFMpegCore.Exceptions;
 using FFMpegCore.Helpers;
+using Microsoft.Extensions.Options;
+using MusicService.Options;
 
 namespace MusicService.Services;
 
-public class FFMpegService(ILogger<FFMpegService> logger)
+public class FFMpegService(
+    ILogger<FFMpegService> logger,
+    IOptions<FFMpegOptions> options)
 {
     public bool IsPresent()
     {
         try
         {
-            FFMpegHelper.VerifyFFMpegExists(new FFOptions());
+            FFOptions ffMpegOptions = new()
+            {
+                BinaryFolder = options.Value.Binaries
+            };
+
+            FFMpegHelper.VerifyFFMpegExists(ffMpegOptions);
+
+            GlobalFFOptions.Configure(ffMpegOptions);
 
             return true;
         }
@@ -26,13 +37,13 @@ public class FFMpegService(ILogger<FFMpegService> logger)
         await FFMpegArguments.FromFileInput(sourceFilePath)
             .OutputToFile(targetFilePath, true, arguments => arguments
                 .OverwriteExisting()
-                .WithAudioBitrate(AudioQuality.Ultra)
-                .WithAudioCodec(AudioCodec.LibMp3Lame)
+                .CopyChannel(Channel.Video)
+                .WithAudioCodec(AudioCodec.LibFdk_Aac)
+                .WithVariableBitrate(5)
                 .WithTagVersion()
                 .WithFastStart())
             .WithLogLevel(FFMpegLogLevel.Error)
             .NotifyOnError(ffMpegError => logger.LogError("{ffMpegError}", ffMpegError))
-            .CancellableThrough(token)
-            .ProcessAsynchronously();
+            .CancellableThrough(token).ProcessAsynchronously();
     }
 }
