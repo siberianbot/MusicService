@@ -37,7 +37,8 @@ public class FFMpegService(
         await FFMpegArguments.FromFileInput(sourceFilePath)
             .OutputToFile(targetFilePath, true, arguments => arguments
                 .OverwriteExisting()
-                .CopyChannel(Channel.Video)
+                .DisableChannel(Channel.Video)
+                .CopyChannel(Channel.Audio)
                 .WithAudioCodec(AudioCodec.LibFdk_Aac)
                 .WithVariableBitrate(5)
                 .WithTagVersion()
